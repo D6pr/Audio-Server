@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Список треків</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <h1>Список всіх треків</h1>
+  <ul>
+    {% for track in tracks %}
+      <li>
+        {{ track.title }}
+        <audio controls>
+          <source src="/static/uploads/{{ track.filename }}" type="audio/mpeg">
+          Ваш браузер не підтримує аудіо
+        </audio>
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="/">Повернутися на головну</a>
+</body>
+</html>

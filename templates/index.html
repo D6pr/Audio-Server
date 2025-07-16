@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>          
+  <head>
+    <title>Audio Server</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+  </head>
+  <body>       
+    <h1>🎵 Проєкт «Аудіосервер»</h1>
+    <hr>
+    <ul>
+        {% for track in tracks %}
+            <li>
+                {{ track.filename }}
+                <audio controls>
+                    <source src ="/static/uploads/{{ track.filename }}" type="audio/mpeg">
+                    Ваш браузер не підтримує аудіо, або виникла помилка
+                </audio>
+            </li>
+        {% endfor %}
+    </ul>
+    <hr>
+    <h2>Завантажити аудіофайл</h2>
+    <form action="/add" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit"><b>Завантажити</b></button>
+    </form>
+  <hr>
+    <h2>Видалити аудіофайл</h2>
+    <form action="/delete" method="post">
+        <input type="text" name="name" placeholder="Назва треку" required>
+        <button type="submit"><b><u>Видалити</u></b></button>
+    </form>
+  <hr>
+    <h2>Знайти аудіофайл</h2>
+    <form action="/search" method="get">
+        <input type="text" name="query" placeholder="Пошук" required>
+        <button type="submit"><b><u>Знайти</u></b></button>
+    </form>
+  <hr>
+    <a href="/tracks/list">
+      <button type="button">Переглянути всі треки</button>
+    </a>
+  </body>
+</html>
