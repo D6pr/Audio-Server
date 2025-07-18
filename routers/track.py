@@ -2,7 +2,8 @@ import os
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
 from sqlalchemy.orm import Session
 from db.database import SessionLocal
-from models.models import Track
+from models.models import Track, User
+from routers.dependencies import get_current_user
 from schemas.schemas import TrackCreate, TrackOut
 from fastapi.responses import FileResponse
 from routers.dependencies import get_current_user, get_db
@@ -25,7 +26,7 @@ def get_all_tracks(db: Session = Depends(get_db)):
     return db.query(Track).all()
 
 @router.post("/add", response_model=TrackOut)
-async def upload_track(file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def upload_track(file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     track = TrackCreate(name=file.filename)
     filepath = os.path.join(UPLOAD_DIR, file.filename)
     with open(filepath, "wb") as buffer:
@@ -37,7 +38,7 @@ async def upload_track(file: UploadFile = File(...), db: Session = Depends(get_d
     return db_track
 
 @router.put("/update/{id}", response_model=TrackOut)
-def update_track(id: int, title: str = Form(...), db: Session = Depends(get_db)):
+def update_track(id: int, title: str = Form(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     track = db.query(Track).filter(Track.id == id).first()
     if not track:
         raise HTTPException(status_code=404, detail="Трек не знайдено")
@@ -47,7 +48,7 @@ def update_track(id: int, title: str = Form(...), db: Session = Depends(get_db))
     return track
 
 @router.delete("/delete/{id}")
-def delete_track(id: int, db: Session = Depends(get_db)):
+def delete_track(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     track = db.query(Track).filter(Track.id == id).first()
     if not track:
         raise HTTPException(status_code=404, detail="Трек не знайдено")

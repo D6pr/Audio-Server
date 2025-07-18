@@ -4,7 +4,14 @@
     <title>Audio Server</title>
     <link rel="stylesheet" href="/static/css/styles.css">
   </head>
-  <body>       
+  <body> 
+    {% if not user %}
+      <a href="/login"><button type="button">Увійти</button></a>
+      <a href="/register"><button type="button">Зареєструватись</button></a>
+    {% else %}
+      <p>Привіт, {{ user.username }}!</p>
+      <a href="/logout"><button type="button">Вийти</button></a>
+    {% endif %}      
     <h1>🎵 Проєкт «Аудіосервер»</h1>
     <hr>
     <ul>
@@ -22,7 +29,7 @@
     <h2>Завантажити аудіофайл</h2>
     <form action="/add" method="post" enctype="multipart/form-data">
         <input type="file" name="file" required>
-        <button type="submit"><b>Завантажити</b></button>
+        <button type="submit"><b><u>Завантажити</u></b></button>
     </form>
   <hr>
     <h2>Видалити аудіофайл</h2>
