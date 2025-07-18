@@ -5,13 +5,15 @@
     <link rel="stylesheet" href="/static/css/styles.css">
   </head>
   <body> 
-    {% if not user %}
-      <a href="/login"><button type="button">Увійти</button></a>
-      <a href="/register"><button type="button">Зареєструватись</button></a>
-    {% else %}
+  {% if request.url.path == "/" %}
+    {% if user %}
       <p>Привіт, {{ user.username }}!</p>
       <a href="/logout"><button type="button">Вийти</button></a>
-    {% endif %}      
+    {% else %}
+      <a href="/login"><button type="button">Увійти</button></a>
+      <a href="/register"><button type="button">Зареєструватись</button></a>
+    {% endif %}   
+  {% endif %}   
     <h1>🎵 Проєкт «Аудіосервер»</h1>
     <hr>
     <ul>

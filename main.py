@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, UploadFile, File, Form, HTTPException, Response
+from fastapi import FastAPI, Request, Depends, UploadFile, File, Form, HTTPException, Response, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -11,6 +11,7 @@ from routers.track import router as track_router
 from db.database import Base, engine, SessionLocal
 from models.models import Track, User
 from routers.auth import authenticate_user, create_access_token
+from routers.dependencies import SECRET_KEY, ALGORITHM
 
 UPLOAD_DIR = "static/uploads"
 
@@ -69,10 +70,21 @@ def read_index(request: Request):
 
 
 @app.get("/search", response_class=HTMLResponse)
-def search_tracks_html(request: Request, query: str):
+def search_tracks_html(request: Request, query: str, token: str = Cookie(default=None)):
     db = next(get_db())
+    username = None
+    if token:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username = payload.get("sub")
+        except JWTError:
+            pass
+
     tracks = db.query(Track).filter(Track.title.ilike(f"%{query}%")).all()
-    return templates.TemplateResponse("index.html", {"request": request, "tracks": tracks})
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request, "tracks": tracks, "username": username}
+    )
 
 
 @app.post("/add")
