@@ -19,11 +19,12 @@ SECRET_KEY = "svinya"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-def get_current_user(access_token: str = Cookie(None), db: Session = Depends(get_db)):
-    if access_token is None:
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), token: str = Cookie(None), db: Session = Depends(get_db)):
+    token = credentials.credentials
+    if token is None:
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
         if username is None:
             raise HTTPException(status_code=401, detail="Invalid token")
@@ -33,3 +34,4 @@ def get_current_user(access_token: str = Cookie(None), db: Session = Depends(get
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
     return user
+

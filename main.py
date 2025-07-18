@@ -12,18 +12,19 @@ from db.database import Base, engine, SessionLocal
 from models.models import Track, User
 from routers.auth import authenticate_user, create_access_token
 from routers.dependencies import SECRET_KEY, ALGORITHM
+from fastapi.security import HTTPBearer
+from routers import auth
 
 UPLOAD_DIR = "static/uploads"
 
+security = HTTPBearer()
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(track_router)
+app.include_router(auth.router)
 
 templates = Jinja2Templates(directory="templates")
-
-SECRET_KEY = "svinya"  # Используй свой секретный ключ
-ALGORITHM = "HS256"
 
 def get_db():
     db = SessionLocal()
@@ -32,7 +33,6 @@ def get_db():
     finally:
         db.close()
 
-# Функция для получения текущего пользователя из токена, который хранится в cookie
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
     token = request.cookies.get("access_token")
     if not token:
@@ -65,7 +65,7 @@ def read_index(request: Request):
             if username:
                 user = db.query(User).filter(User.username == username).first()
         except JWTError:
-            pass  # токен недействителен — считаем, что пользователь не авторизован
+            pass
     return templates.TemplateResponse("index.html", {"request": request, "tracks": tracks, "user": user})
 
 
@@ -127,7 +127,6 @@ def list_tracks_page(request: Request):
     tracks = db.query(Track).all()
     return templates.TemplateResponse("tracks_list.html", {"request": request, "tracks": tracks})
 
-
 @app.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
     return templates.TemplateResponse("login.html", {"request": request, "error": None})
@@ -157,28 +156,3 @@ def logout():
     return response
 
 
-@app.get("/register", response_class=HTMLResponse)
-def register_form(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request, "error": None})
-
-@app.post("/register", response_class=HTMLResponse)
-def register_post(
-    request: Request,
-    username: str = Form(...),
-    email: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db),
-):
-    # Проверка, есть ли пользователь с таким username
-    if db.query(User).filter(User.username == username).first():
-        return templates.TemplateResponse("register.html", {"request": request, "error": "Пользователь с таким именем уже существует"})
-    
-    # Хешируем пароль
-    hashed_password = get_password_hash(password)
-    new_user = User(username=username, email=email, hashed_password=hashed_password)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
-    # После успешной регистрации редиректим на логин
-    return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)

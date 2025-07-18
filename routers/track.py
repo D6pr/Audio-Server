@@ -72,15 +72,3 @@ def play_track(id: int, db: Session = Depends(get_db)):
 @router.get("/search", response_model=list[TrackOut])
 def search_tracks(query: str, db: Session = Depends(get_db)):
     return db.query(Track).filter(Track.title.ilike(f"%{query}%")).all()
-
-@router.post("/delete")
-def delete_track_from_form(id: str = Form(...), db: Session = Depends(get_db)):
-    track = db.query(Track).filter(Track.title == id).first()
-    if not track:
-        raise HTTPException(status_code=404, detail="Трек не знайдено")
-    filepath = os.path.join(UPLOAD_DIR, track.filename)
-    db.delete(track)
-    db.commit()
-    if os.path.exists(filepath):
-        os.remove(filepath)
-    return {"message": "Трек видалено"}
