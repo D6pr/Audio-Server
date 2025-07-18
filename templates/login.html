@@ -2,11 +2,12 @@
 <html>
 <head>
   <title>Login</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
   <h2>Вхід на сайт</h2>
   <form method="POST" action="/login">
-    <input name="username" placeholder="Ім'я користувача" required />
+    <input name="username" type="username" placeholder="Ім'я користувача" required />
     <input name="password" type="password" placeholder="Пароль" required />
     <button type="submit">Увійти</button>
   </form>

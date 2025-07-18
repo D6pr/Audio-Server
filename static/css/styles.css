@@ -43,6 +43,9 @@ form {
     max-width: 400px;
 }
 
+input[type="username"],
+input[type="email"],
+input[type="password"],
 input[type="file"],
 input[type="text"] {
     padding: 10px;
@@ -50,6 +53,8 @@ input[type="text"] {
     border: 1px solid #ccc;
     font-size: 16px;
 }
+
+
 
 button {
     background-color: #2c8c5f;
