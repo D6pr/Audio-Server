@@ -4,14 +4,14 @@
   <title>Регистрация</title>
 </head>
 <body>
-  <h2>Регистрация нового пользователя</h2>
+  <h2>Регистрация нового користувача</h2>
 
   {% if error %}
     <p style="color: red;">{{ error }}</p>
   {% endif %}
 
   <form action="/register" method="post">
-    <label>Имя пользователя:</label><br>
+    <label>Ім'я користувача:</label><br>
     <input type="text" name="username" required minlength="3" maxlength="50"><br><br>
 
     <label>Email:</label><br>
@@ -20,9 +20,9 @@
     <label>Пароль:</label><br>
     <input type="password" name="password" required minlength="6"><br><br>
 
-    <button type="submit">Зарегистрироваться</button>
+    <button type="submit">Зареєструватись</button>
   </form>
 
-  <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+  <p>Вже є аккаунт? <a href="/login">Увійти</a></p>
 </body>
 </html>
